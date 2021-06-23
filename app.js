@@ -1,31 +1,40 @@
-/**
- * Module dependencies.
- */
-var express = require("express"),
-  http = require("http"),
-  path = require("path");
+const express = require("express"),
+  routes = require("./routes"),
+  user = require("./routes/user"),
+  admin = require("./routes/admin"),
+  path = require("path"),
+  app = express(),
+  mysql = require("mysql"),
+  bodyParser = require("body-parser"),
+  multer = require("multer"),
+  fileUpload = require("express-fileupload"),
+  session = require("express-session");
 
-const session = require("express-session");
-var app = express();
-var mysql = require("mysql");
-var bodyParser = require("body-parser");
-const bcrypt = require("bcrypt");
+// MANAGING FILES
+// enable files upload
+app.use(
+  fileUpload({
+    createParentPath: true,
+  })
+);
 
-const router = express.Router();
-
-var connection = mysql.createConnection({
+// MANAGING DATABASE
+var con = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "",
   database: "e-soloir",
 });
-connection.connect();
-global.db = connection;
+
+con.connect(function (err) {
+  if (err) throw err;
+  console.log("Connected to the MySQL server.");
+});
+
+global.db = con;
 
 // all environments
 app.set("port", process.env.PORT || 8080);
-app.set("views", __dirname + "/views");
-app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
@@ -36,6 +45,7 @@ app.use(
     resave: false,
   })
 );
+app.use(express.static('uploads'));
 
 //Middleware
 app.listen(8080, function () {
@@ -44,79 +54,8 @@ app.listen(8080, function () {
   console.log(message);
 });
 
-// LOGIN POST
-app.post("/login", async function (req, res) {
-  const email = req.body.email;
-  const password = req.body.password;
-
-  const session = req.session;
-
-  connection.query(
-    "SELECT * FROM users WHERE email = ?",
-    [email],
-    async function (err, result, fields) {
-      if (err) throw err;
-
-      if (result.length === 0) {
-        res.status(401).json({
-          message: "user doesn't exists",
-        });
-        return;
-      }
-
-      // si on a pas trouvé l'utilisateur
-      // alors on le crée
-      const user = result[0];
-
-      if (user.id == session.userId) {
-        res.status(401).json({ message: "user already connected" });
-        return;
-      }
-
-      if (await bcrypt.compare(password, user.password)) {
-        // alors connecter l'utilisateur
-        session.userId = user.id;
-        res.json({
-          id: user.id,
-          email: user.email,
-        });
-      } else {
-        res.status(401).json({
-          message: "bad password",
-        });
-        return;
-      }
-    }
-  );
-}); //call for login post
-
-// SIGNUP POST
-app.post("/signup", function (req, res) {
-  const email = req.body.email;
-  const password = req.body.password;
-
-  connection.query(
-    "SELECT * FROM users WHERE email = ?",
-    [email],
-    async function (err, result, fields) {
-      if (err) throw err;
-
-      if (result.length > 0) {
-        res.status(401).json({
-          message: "user already exists",
-        });
-        return;
-      }
-
-      // si on a pas trouvé l'utilisateur
-      // alors on le crée
-      const hash = await bcrypt.hash(password, 10);
-
-      await connection.query(
-        "INSERT INTO users (email, password) VALUES (?, ?)",
-        [email, hash]
-      );
-      res.send("registered");
-    }
-  );
-}); //call for signup post
+// REQUESTS
+app.post("/signup", user.signup); //call for signup post
+app.post("/login", user.login); //call for login post
+app.post("/setValidity", admin.setValidity); //call for setValidity
+app.post("/getNotValidatedUsers", admin.getNotValidatedUsers); // call for getNotValidatedUsers

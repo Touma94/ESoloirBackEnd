@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : mar. 22 juin 2021 à 10:05
+-- Généré le : jeu. 24 juin 2021 à 12:59
 -- Version du serveur :  8.0.21
 -- Version de PHP : 7.3.21
 
@@ -26,17 +26,18 @@ USE `e-soloir`;
 -- --------------------------------------------------------
 
 --
--- Structure de la table `img_identity_card`
+-- Structure de la table `img`
 --
 
-DROP TABLE IF EXISTS `img_identity_card`;
-CREATE TABLE IF NOT EXISTS `img_identity_card` (
+DROP TABLE IF EXISTS `img`;
+CREATE TABLE IF NOT EXISTS `img` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   `size` int NOT NULL,
   `description` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `id_user` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -57,17 +58,17 @@ CREATE TABLE IF NOT EXISTS `users` (
   `isValidated` tinyint(1) NOT NULL,
   `isAdmin` tinyint(1) NOT NULL DEFAULT '0',
   `birthplace` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `id_ID` int NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 
 --
 -- Déchargement des données de la table `users`
 --
 
-INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `password`, `postal_code`, `address`, `birthdate`, `isValidated`, `isAdmin`, `birthplace`, `id_ID`) VALUES
-(10, '', '', 'test@test.fr', '$2b$10$fbbW4CLgc59XCjBJ.Vbl4OqKP8e.qgfFhQHycpokTBEyq41dWyWmS', '', '', '0000-00-00', 0, 0, '', 0);
+INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `password`, `postal_code`, `address`, `birthdate`, `isValidated`, `isAdmin`, `birthplace`) VALUES
+(20, '', '', 'vincent.n@hotmail.fr', '$2b$10$FbMU1X4L6d4jmyuRaKCKienO2dT/IYzvm/NZTx12Yhsv46fEdfKX6', '', '', '0000-00-00', 0, 0, ''),
+(15, '', '', 'test@test.com', '$2b$10$jmXShSJ8T5EPbA3T6xWbnutKDsQsfan3NbaAl2wrYYZXUSOCaTGYG', '', '', '0000-00-00', 0, 0, '');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

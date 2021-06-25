@@ -1,12 +1,10 @@
 const express = require("express"),
-  routes = require("./routes"),
   user = require("./routes/user"),
   admin = require("./routes/admin"),
   path = require("path"),
   app = express(),
   mysql = require("mysql"),
   bodyParser = require("body-parser"),
-  multer = require("multer"),
   fileUpload = require("express-fileupload"),
   session = require("express-session");
 
@@ -34,10 +32,12 @@ con.connect(function (err) {
 global.db = con;
 
 // all environments
-app.set("port", process.env.PORT || 8080);
+const port = 8080;
+
+app.set("port", process.env.PORT || port);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "uploads"))); // static files in public directory
 app.use(
   session({
     secret: "grehjznejzkhgjrez",
@@ -45,17 +45,25 @@ app.use(
     resave: false,
   })
 );
-app.use(express.static('uploads'));
 
 //Middleware
-app.listen(8080, function () {
+app.listen(port, function () {
   var dateTime = new Date();
-  var message = "Server running on Port : 8080, started at :" + dateTime;
+  var message =
+    "Server running on Port : " + port + ", started at :" + dateTime;
   console.log(message);
 });
 
 // REQUESTS
 app.post("/signup", user.signup); //call for signup post
+
 app.post("/login", user.login); //call for login post
-app.post("/setValidity", admin.setValidity); //call for setValidity
-app.post("/getNotValidatedUsers", admin.getNotValidatedUsers); // call for getNotValidatedUsers
+
+app.put("/admin/validation/:id_user", admin.setValidity); //call for setValidity
+
+app.get("/admin/notValidatedUsers", admin.notValidatedUsers); // call for getNotValidatedUsers
+
+app.get("/logout", function (req, res) {
+  req.session.destroy();
+  res.send("logged out");
+});

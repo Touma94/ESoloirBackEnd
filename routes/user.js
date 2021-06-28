@@ -7,6 +7,9 @@ exports.signup = async function (req, res) {
   const email = req.body.email;
   const password = req.body.password;
 
+  console.log(email, password);
+  console.log(db);
+
   // verify email's uniqueness
   await db.query(
     "SELECT * FROM users WHERE email = ?",

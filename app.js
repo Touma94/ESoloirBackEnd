@@ -57,6 +57,10 @@ app.listen(port, function () {
 });
 
 // REQUESTS
+
+app.get("/claque", function (req, res) {
+  res.send("salut");
+});
 app.post("/signup", user.signup); //call for signup post
 
 app.post("/login", user.login); //call for login post

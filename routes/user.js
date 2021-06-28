@@ -12,7 +12,7 @@ exports.signup = async function (req, res) {
 
   // verify email's uniqueness
   await db.query(
-    "SELECT * FROM users WHERE email = ?",
+    "SELECT * FROM users WHERE email = $1",
     [email],
     function (error, result, fields) {
       if (error) throw error;

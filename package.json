@@ -24,5 +24,8 @@
     "nodemailer": "^6.6.2",
     "nodemon": "^2.0.7",
     "req-flash": "0.0.3"
+  },
+  "engines": {
+    "node": "12.19.0"
   }
 }

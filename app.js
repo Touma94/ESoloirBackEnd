@@ -3,7 +3,6 @@ const express = require("express"),
   admin = require("./routes/admin"),
   path = require("path"),
   app = express(),
-  mysql = require("mysql"),
   bodyParser = require("body-parser"),
   fileUpload = require("express-fileupload"),
   session = require("express-session");
@@ -16,20 +15,18 @@ app.use(
   })
 );
 
-// MANAGING DATABASE
-var con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "e-soloir",
+// POSTGRE
+const { Client } = require("pg");
+
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
-con.connect(function (err) {
-  if (err) throw err;
-  console.log("Connected to the MySQL server.");
-});
-
-global.db = con;
+client.connect();
+global.db = client;
 
 // all environments
 const port = 8080;

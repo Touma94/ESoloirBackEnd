@@ -5,7 +5,8 @@ const express = require("express"),
   app = express(),
   bodyParser = require("body-parser"),
   fileUpload = require("express-fileupload"),
-  session = require("express-session");
+  session = require("express-session"),
+  cors = require("cors");
 
 // MANAGING FILES
 // enable files upload
@@ -38,6 +39,7 @@ app.set("port", process.env.PORT || port);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "uploads"))); // static files in public directory
+app.use(cors({ credentials: true, origin: true }));
 app.use(
   session({
     secret: "grehjznejzkhgjrez",

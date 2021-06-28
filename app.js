@@ -50,15 +50,9 @@ app.use(
 const { PORT = 3000, LOCAL_ADDRESS = "0.0.0.0" } = process.env;
 
 app.listen(PORT, LOCAL_ADDRESS, () => {
-  const address = app.address();
   var dateTime = new Date();
   var message =
-    "Server running on Port : " +
-    port +
-    ", started at :" +
-    dateTime +
-    ", listening at : " +
-    address;
+    "Server running on Port : " + port + ", started at :" + dateTime;
   console.log(message);
 });
 

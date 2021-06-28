@@ -25,7 +25,12 @@ const client = new Client({
   },
 });
 
-client.connect();
+try {
+  client.connect();
+} catch (e) {
+  console.log("error :" + e);
+}
+
 global.db = client;
 
 // all environments

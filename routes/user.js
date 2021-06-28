@@ -30,7 +30,7 @@ exports.signup = async function (req, res) {
 
   // user insertion
   await db.query(
-    "INSERT INTO users (email, password) VALUES (?, ?)",
+    "INSERT INTO users (email, password) VALUES ($1, $2)",
     [email, hash],
     (error, result, fields) => {
       if (error) throw error;
@@ -67,7 +67,7 @@ exports.signup = async function (req, res) {
 
       // files insertion in database
       db.query(
-        "INSERT INTO img (name, id_user) VALUES (?, ?), (?, ?), (?, ?)",
+        "INSERT INTO img (name, id_user) VALUES ($1, $2), ($3, $4), ($5, $6)",
         [
           result.insertId + "_" + electoral_card.name,
           result.insertId,
@@ -94,7 +94,7 @@ exports.login = function (req, res) {
   const password = req.body.password;
 
   db.query(
-    "SELECT * FROM users WHERE email = ?",
+    "SELECT * FROM users WHERE email = $1",
     [email],
     async function (err, result, fields) {
       if (err) return console.error(error.message);

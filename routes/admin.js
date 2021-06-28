@@ -9,7 +9,7 @@ exports.setValidity = async function (req, res) {
   if (validity) {
     // SET VALIDITY = TRUE
     await db.query(
-      "UPDATE users SET isValidated = 1 WHERE id = ?",
+      "UPDATE users SET isValidated = 1 WHERE id = $1",
       [id_user],
       function (err, result) {
         if (err) throw err;
@@ -50,7 +50,7 @@ exports.setValidity = async function (req, res) {
   } else {
     // DELETE ACCOUNT
     await db.query(
-      "DELETE FROM users WHERE id = ?",
+      "DELETE FROM users WHERE id = $1",
       [id_user],
       function (err, result) {
         if (err) throw err;

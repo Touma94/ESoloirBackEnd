@@ -46,6 +46,7 @@ app.use(
   })
 );
 
+//Middleware
 const { PORT = 3000, LOCAL_ADDRESS = "0.0.0.0" } = process.env;
 
 app.listen(PORT, LOCAL_ADDRESS, () => {
@@ -60,9 +61,6 @@ app.listen(PORT, LOCAL_ADDRESS, () => {
     address;
   console.log(message);
 });
-
-//Middleware
-app.listen(port, function () {});
 
 // REQUESTS
 

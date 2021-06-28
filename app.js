@@ -34,8 +34,6 @@ try {
 global.db = client;
 
 // all environments
-const port = 8080;
-
 app.set("port", process.env.PORT || port);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -48,13 +46,23 @@ app.use(
   })
 );
 
-//Middleware
-app.listen(port, function () {
+const { PORT = 3000, LOCAL_ADDRESS = "0.0.0.0" } = process.env;
+
+app.listen(PORT, LOCAL_ADDRESS, () => {
+  const address = server.address();
   var dateTime = new Date();
   var message =
-    "Server running on Port : " + port + ", started at :" + dateTime;
+    "Server running on Port : " +
+    port +
+    ", started at :" +
+    dateTime +
+    ", listening at : " +
+    address;
   console.log(message);
 });
+
+//Middleware
+app.listen(port, function () {});
 
 // REQUESTS
 

@@ -41,44 +41,30 @@ exports.signup = async function (req, res) {
     res.status(500).json({ message: "pb get id : " + e.message });
   }
 
-  // specific files upload
-  const identity_card = req.files.identity;
-  const electoral_card = req.files.electoral;
-  const selfie = req.files.selfie;
+  // files upload
+  var files = [];
+  var fileKeys = Object.keys(req.files);
 
-  const path_identity_card = "./uploads/identity_cards/" + identity_card.name;
-  const path_electoral_card =
-    "./uploads/electoral_cards/" + electoral_card.name;
-  const path_selfie = "./uploads/selfies/" + selfie.name;
-
-  identity_card.mv(path_identity_card, (error) => {
-    if (error) throw error;
+  fileKeys.forEach(function (key) {
+    files.push(req.files[key]);
   });
 
-  electoral_card.mv(path_electoral_card, (error) => {
-    if (error) throw error;
-  });
+  files.forEach((element) => {
+    element.mv("./uploads/" + element.name, (error) => {
+      if (error)
+        res.status(500).json({ message: "pb get id : " + error.message });
+    });
 
-  selfie.mv(path_selfie, (error) => {
-    if (error) throw error;
+    try {
+      // files insertion in database
+      db.query("INSERT INTO img (name, id_user) VALUES ($1, $2)", [
+        element.name,
+        insertId,
+      ]);
+    } catch (e) {
+      res.status(500).json({ message: "pb get id : " + e.message });
+    }
   });
-
-  try {
-    // files insertion in database
-    const result = await db.query(
-      "INSERT INTO img (name, id_user) VALUES ($1, $2), ($3, $4), ($5, $6)",
-      [
-        electoral_card.name,
-        insertId,
-        identity_card.name,
-        insertId,
-        selfie.name,
-        insertId,
-      ]
-    );
-  } catch (e) {
-    res.status(500).json({ message: "pb get id : " + e.message });
-  }
 
   res.send("user registered");
 };

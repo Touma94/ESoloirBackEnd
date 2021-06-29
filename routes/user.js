@@ -11,124 +11,123 @@ exports.signup = async function (req, res) {
   const password = req.body.password;
 
   // verify email's uniqueness
-  await db.query(
-    "SELECT * FROM users WHERE email = $1",
-    [email],
-    function (error, result, fields) {
-      if (error) throw error;
+  try {
+    const result = await db.query("SELECT * FROM users WHERE email = $1", [
+      email,
+    ]);
 
-      if (result.length > 0) {
-        res.status(401).json({
-          message: "user already exists",
-        });
-        return;
-      }
+    if (result.rows.length > 0) {
+      res.status(401).json({
+        message: "user already exists",
+      });
+      return;
     }
-  );
+  } catch (e) {
+    res.status(400).json({ message: "pb get id : " + e.message });
+  }
 
   const hash = await bcrypt.hash(password, 10); // bcrypt hash
 
-  // user insertion
-  await db.query(
-    "INSERT INTO users (first_name, last_name, phone, email, password) VALUES ($1, $2, $3, $4, $5)",
-    [first_name, last_name, phone, email, hash],
-    (error, result, fields) => {
-      if (error) throw error;
+  var insertId = -1;
+  try {
+    // user insertion
+    const result = await db.query(
+      "INSERT INTO users (first_name, last_name, phone, email, password) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+      [first_name, last_name, phone, email, hash]
+    );
 
-      // specific files upload
-      const identity_card = req.files.identity;
-      const electoral_card = req.files.electoral;
-      const selfie = req.files.selfie;
+    insertId = result.rows[0].id;
+  } catch (e) {
+    res.status(500).json({ message: "pb get id : " + e.message });
+  }
 
-      const path_identity_card =
-        "./uploads/identity_cards/" +
-        result.insertId +
-        "_" +
-        identity_card.name;
-      const path_electoral_card =
-        "./uploads/electoral_cards/" +
-        result.insertId +
-        "_" +
-        electoral_card.name;
-      const path_selfie =
-        "./uploads/selfies/" + result.insertId + "_" + selfie.name;
+  // specific files upload
+  const identity_card = req.files.identity;
+  const electoral_card = req.files.electoral;
+  const selfie = req.files.selfie;
 
-      identity_card.mv(path_identity_card, (error) => {
-        if (error) throw error;
-      });
+  const path_identity_card = "./uploads/identity_cards/" + identity_card.name;
+  const path_electoral_card =
+    "./uploads/electoral_cards/" + electoral_card.name;
+  const path_selfie = "./uploads/selfies/" + selfie.name;
 
-      electoral_card.mv(path_electoral_card, (error) => {
-        if (error) throw error;
-      });
+  identity_card.mv(path_identity_card, (error) => {
+    if (error) throw error;
+  });
 
-      selfie.mv(path_selfie, (error) => {
-        if (error) throw error;
-      });
+  electoral_card.mv(path_electoral_card, (error) => {
+    if (error) throw error;
+  });
 
-      // files insertion in database
-      db.query(
-        "INSERT INTO img (name, id_user) VALUES ($1, $2), ($3, $4), ($5, $6)",
-        [
-          result.insertId + "_" + electoral_card.name,
-          result.insertId,
-          result.insertId + "_" + identity_card.name,
-          result.insertId,
-          result.insertId + "_" + selfie.name,
-          result.insertId,
-        ],
-        (error, result, fields) => {
-          if (error) throw error;
+  selfie.mv(path_selfie, (error) => {
+    if (error) throw error;
+  });
 
-          console.log("rows inserted");
-        }
-      );
+  try {
+    // files insertion in database
+    const result = await db.query(
+      "INSERT INTO img (name, id_user) VALUES ($1, $2), ($3, $4), ($5, $6)",
+      [
+        electoral_card.name,
+        insertId,
+        identity_card.name,
+        insertId,
+        selfie.name,
+        insertId,
+      ]
+    );
+  } catch (e) {
+    res.status(500).json({ message: "pb get id : " + e.message });
+  }
 
-      res.send("user registered");
-    }
-  );
+  res.send("user registered");
 };
 
 // LOGIN
-exports.login = function (req, res) {
+exports.login = async function (req, res) {
   const email = req.body.email;
-  const password = req.body.password;
 
-  db.query(
-    "SELECT * FROM users WHERE email = $1",
-    [email],
-    async function (err, result, fields) {
-      if (err) return console.error(error.message);
-
-      if (result.length === 0) {
-        res.status(401).json({
-          message: "user doesn't exists",
-        });
-        return;
-      }
-
-      const user = result[0];
-
-      if (user.id == req.session.userId) {
-        res.status(401).json({ message: "user already connected" });
-        return;
-      }
-
-      if (await bcrypt.compare(password, user.password)) {
-        // alors connecter l'utilisateur
-        req.session.userId = user.id;
-        res.json({
-          message: "user connected",
-          id: user.id,
-          email: user.email,
-          isAdmin: user.isAdmin,
-          isValidated: user.isValidated,
-        });
-      } else {
-        res.status(401).json({
-          message: "bad password",
-        });
-        return;
-      }
+  var result = "";
+  try {
+    result = await db.query({
+      text: "SELECT * FROM users WHERE email = $1",
+      values: [email],
+    });
+    if (result.rows.length === 0) {
+      res.status(500).json({ message: "user doesn't exist" });
+      return;
     }
-  );
+  } catch (e) {
+    res.status(500).json({ message: "pb get id : " + e.message });
+  }
+
+  const user = result.rows[0];
+
+  if (user.id == req.session.userId) {
+    res.status(401).json({ message: "user already connected" });
+    return;
+  }
+
+  try {
+    const password = req.body.password;
+
+    if (await bcrypt.compare(password, user.password)) {
+      // alors connecter l'utilisateur
+      req.session.userId = user.id;
+      res.json({
+        message: "user connected",
+        id: user.id,
+        email: user.email,
+        isAdmin: user.isAdmin,
+        isValidated: user.isValidated,
+      });
+    } else {
+      res.status(401).json({
+        message: "bad password",
+      });
+      return;
+    }
+  } catch (e) {
+    res.status(500).json({ message: "pb get id : " + e.message });
+  }
 };

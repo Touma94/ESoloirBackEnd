@@ -4,11 +4,11 @@ const bcrypt = require("bcrypt"),
 
 // SIGNUP
 exports.signup = async function (req, res) {
+  const first_name = req.body.first_name;
+  const last_name = req.body.last_name;
+  const phone = req.body.phone;
   const email = req.body.email;
   const password = req.body.password;
-
-  console.log(email, password);
-  console.log(db);
 
   // verify email's uniqueness
   await db.query(
@@ -30,8 +30,8 @@ exports.signup = async function (req, res) {
 
   // user insertion
   await db.query(
-    "INSERT INTO users (email, password) VALUES ($1, $2)",
-    [email, hash],
+    "INSERT INTO users (first_name, last_name, phone, email, password) VALUES ($1, $2, $3, $4, $5)",
+    [first_name, last_name, phone, email, hash],
     (error, result, fields) => {
       if (error) throw error;
 

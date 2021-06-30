@@ -118,3 +118,25 @@ exports.login = async function (req, res) {
     res.status(500).json({ message: "pb get id : " + e.message });
   }
 };
+
+// LOGIN
+exports.me = async function (req, res) {
+  /*
+   * Cette route retourne les infos de l'utilisateur connecté
+   * Ne marche uniquement lorsque l'utilisateur est connecté
+   */
+
+  router.get("/me", async (req, res) => {
+    if (typeof req.session.userId === "undefined") {
+      res.status(401).json({ message: "Utilisateur non connecté" });
+      return;
+    }
+
+    const result = await db.query({
+      text: "SELECT id, email FROM users WHERE id=$1",
+      values: [req.session.userId],
+    });
+
+    res.json(result.rows[0]);
+  });
+};

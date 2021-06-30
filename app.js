@@ -19,11 +19,20 @@ app.use(
 // POSTGRE
 const { Client } = require("pg");
 
+// const client = new Client({
+//   connectionString: process.env.DATABASE_URL,
+//   ssl: {
+//     rejectUnauthorized: false,
+//   },
+// });
+
+// LOCAL
 const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  user: "postgres",
+  host: "localhost",
+  database: "e-soloir",
+  password: "Postgrevinc06",
+  port: 5432,
 });
 
 try {
@@ -59,19 +68,17 @@ app.listen(PORT, LOCAL_ADDRESS, () => {
 });
 
 // REQUESTS
-
-app.get("/claque", function (req, res) {
-  res.send("salut");
-});
 app.post("/signup", user.signup); //call for signup post
 
 app.post("/login", user.login); //call for login post
 
-app.put("/admin/validation/:id_user", admin.setValidity); //call for setValidity
+app.post("/me", user.me); //call for login post
+
+app.put("/admin/validation", admin.setValidity); //call for setValidity
 
 app.get("/admin/notValidatedUsers", admin.notValidatedUsers); // call for getNotValidatedUsers
 
-app.get("/logout", function (req, res) {
+app.delete("/logout", function (req, res) {
   req.session.destroy();
   res.send("logged out");
 });

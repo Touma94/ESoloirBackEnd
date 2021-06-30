@@ -105,8 +105,8 @@ exports.login = async function (req, res) {
         message: "user connected",
         id: user.id,
         email: user.email,
-        isAdmin: user.isAdmin,
-        isValidated: user.isValidated,
+        isadmin: user.isadmin,
+        isvalidated: user.isvalidated,
       });
     } else {
       res.status(401).json({

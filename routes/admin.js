@@ -9,7 +9,7 @@ exports.setValidity = async function (req, res) {
   if (validity) {
     // SET VALIDITY = TRUE
     await db.query(
-      "UPDATE users SET isValidated = 1 WHERE id = $1",
+      "UPDATE users SET isvalidated = true WHERE id = $1",
       [id_user],
       function (err, result) {
         if (err) throw err;
@@ -95,7 +95,7 @@ exports.setValidity = async function (req, res) {
 // GETNOTVALIDATEDUSERS
 exports.notValidatedUsers = async function (req, res) {
   await db.query(
-    "SELECT * FROM users WHERE isValidated = 0",
+    "SELECT * FROM users WHERE isvalidated = false",
     function (error, result, fields) {
       if (error) throw error;
 

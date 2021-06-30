@@ -43,10 +43,11 @@ exports.signup = async function (req, res) {
 
   // files upload
   var files = [];
-  var fileKeys = Object.keys(req.files);
+  var fileKeys = Object.keys(req.files.files);
 
   fileKeys.forEach(function (key) {
-    files.push(req.files[key]);
+    req.files.files[key];
+    files.push(req.files.files[key]);
   });
 
   files.forEach((element) => {

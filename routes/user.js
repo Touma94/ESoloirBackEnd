@@ -18,7 +18,7 @@ exports.signup = async function (req, res) {
 
     if (result.rows.length > 0) {
       res.status(401).json({
-        message: "user already exists",
+        message: "Un utilisateur correspond déjà à cette email.",
       });
       return;
     }
@@ -32,8 +32,17 @@ exports.signup = async function (req, res) {
   try {
     // user insertion
     const result = await db.query(
-      "INSERT INTO users (first_name, last_name, phone, email, password) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-      [first_name, last_name, phone, email, hash]
+      "INSERT INTO users (first_name, last_name, phone, email, password, id_card, selfie, electoral_card) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id",
+      [
+        first_name,
+        last_name,
+        phone,
+        email,
+        hash,
+        req.files.files[0].name,
+        req.files.files[1].name,
+        req.files.files[2].name,
+      ]
     );
 
     insertId = result.rows[0].id;
@@ -55,16 +64,6 @@ exports.signup = async function (req, res) {
       if (error)
         res.status(500).json({ message: "pb get id : " + error.message });
     });
-
-    try {
-      // files insertion in database
-      db.query("INSERT INTO img (name, id_user) VALUES ($1, $2)", [
-        element.name,
-        insertId,
-      ]);
-    } catch (e) {
-      res.status(500).json({ message: "pb get id : " + e.message });
-    }
   });
 
   res.send("user registered");
@@ -81,7 +80,9 @@ exports.login = async function (req, res) {
       values: [email],
     });
     if (result.rows.length === 0) {
-      res.status(500).json({ message: "user doesn't exist" });
+      res
+        .status(500)
+        .json({ message: "Cet email ne correspond à aucun utilisateur." });
       return;
     }
   } catch (e) {
@@ -91,7 +92,7 @@ exports.login = async function (req, res) {
   const user = result.rows[0];
 
   if (user.id == req.session.userId) {
-    res.status(401).json({ message: "user already connected" });
+    res.status(401).json({ message: "Utilisateur déjà connecté." });
     return;
   }
 
@@ -110,7 +111,7 @@ exports.login = async function (req, res) {
       });
     } else {
       res.status(401).json({
-        message: "bad password",
+        message: "Mot de passe incorrecte.",
       });
       return;
     }

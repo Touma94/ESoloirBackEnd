@@ -66,7 +66,7 @@ exports.signup = async function (req, res) {
     });
   });
 
-  res.send("user registered");
+  res.json({ message: "user registered" });
 };
 
 // LOGIN

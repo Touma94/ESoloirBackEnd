@@ -33,10 +33,18 @@ exports.setValidity = async function (req, res) {
     });
 
     var mailOptions = {
-      from: "'e-soloir' <e-soloir@outlook.fr>",
+      from: "'e-soloir' <e-soloir@hotmail.com>",
       to: email,
       subject: "Compte e-soloir validé",
-      html: '<div><img alt="logo" src="../img/logo_officiel.png" width="100" height="89" style="margin: 10px 0"/><p>Bonjour Monsieur/madame,</p><p> Votre compte d’électeur sur la plateforme e-soloir a été validé. Vous avez maintenant accès à votre espace de vote en vous connectant sur ce lien ci-dessous :</p><a href="https://e-soloir.com/login">https://e-soloir.com/login</a</div>',
+      text: "yes",
+      html: '<div><img src="cid:logo" width="100" height="89" style="margin: 10px 0"><p>Bonjour Monsieur/madame,</p><p> Votre compte d’électeur sur la plateforme e-soloir a été validé. Vous avez maintenant accès à votre espace de vote en vous connectant sur ce lien ci-dessous :</p><a href="https://e-soloir.com/login">https://e-soloir.com/login</a></div>',
+      attachments: [
+        {
+          filename: "logo_officiel.png",
+          path: __dirname + "/img/logo_officiel.png",
+          cid: "logo", //my mistake was putting "cid:logo@cid" here!
+        },
+      ],
     };
 
     // send mail with defined transport object
@@ -73,10 +81,18 @@ exports.setValidity = async function (req, res) {
     });
 
     var mailOptions = {
-      from: "'e-soloir' <e-soloir@outlook.fr>",
+      from: "'e-soloir' <e-soloir@hotmail.com>",
       to: email,
       subject: "Compte e-soloir invalide",
-      html: '<div><img alt="logo" src="../img/logo_officiel.png" width="100" height="89" style="margin: 10px 0"/><p>Bonjour Monsieur/madame,</p><p> Votre compte d’électeur sur la plateforme e-soloir n\'a pas été validé. Veuillez vérifier vos pièces d\'identités</p><a href="https://e-soloir.com/register">https://e-soloir.com/register</a</div>',
+      text: "yes",
+      html: '<div><img src="cid:logo" width="100" height="89" style="margin: 10px 0"><p>Bonjour Monsieur/madame,</p><p> Votre compte d’électeur sur la plateforme e-soloir n\'a pas été validé. Veuillez vérifier vos pièces d\'identités</p><a href="https://e-soloir.com/register">https://e-soloir.com/register</a></div>',
+      attachments: [
+        {
+          filename: "logo_officiel.png",
+          path: __dirname + "/img/logo_officiel.png",
+          cid: "logo", //my mistake was putting "cid:logo@cid" here!
+        },
+      ],
     };
 
     // send mail with defined transport object

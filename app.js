@@ -72,6 +72,8 @@ app.post("/signup", user.signup); //call for signup post
 
 app.post("/login", user.login); //call for login post
 
+app.post("/voter", user.voter); //call for login post
+
 app.get("/me", user.me); //call for login post
 
 app.put("/admin/validation", admin.setValidity); //call for setValidity

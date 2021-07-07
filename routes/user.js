@@ -139,3 +139,19 @@ exports.me = async function (req, res) {
 
   res.json(result.rows[0]);
 };
+
+// LOGIN
+exports.voter = async function (req, res) {
+  const id_user = req.body.id;
+  await db.query(
+    "UPDATE users SET hasvoted = true WHERE id = $1",
+    [id_user],
+    function (err, result) {
+      if (err) throw err;
+
+      console.log(result.affectedRows + " record(s) updated");
+    }
+  );
+
+  res.send("user has voted");
+};

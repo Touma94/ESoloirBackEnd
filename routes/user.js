@@ -142,7 +142,8 @@ exports.me = async function (req, res) {
 
 // LOGIN
 exports.voter = async function (req, res) {
-  const id_user = req.body.id;
+  const id_user = req.body.id_user;
+
   await db.query(
     "UPDATE users SET hasvoted = true WHERE id = $1",
     [id_user],
@@ -154,4 +155,14 @@ exports.voter = async function (req, res) {
   );
 
   res.send("user has voted");
+};
+
+// LOGIN
+exports.hasvoted = async function (req, res) {
+  const result = await db.query({
+    text: "SELECT hasvoted FROM users WHERE id=$1",
+    values: [req.query.id],
+  });
+
+  res.json(result.rows[0]);
 };

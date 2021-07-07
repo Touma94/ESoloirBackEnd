@@ -127,17 +127,15 @@ exports.me = async function (req, res) {
    * Ne marche uniquement lorsque l'utilisateur est connecté
    */
 
-  router.get("/me", async (req, res) => {
-    if (typeof req.session.userId === "undefined") {
-      res.status(401).json({ message: "Utilisateur non connecté" });
-      return;
-    }
+  if (typeof req.session.userId === "undefined") {
+    res.status(401).json({ message: "Utilisateur non connecté" });
+    return;
+  }
 
-    const result = await db.query({
-      text: "SELECT id, email FROM users WHERE id=$1",
-      values: [req.session.userId],
-    });
-
-    res.json(result.rows[0]);
+  const result = await db.query({
+    text: "SELECT id, email FROM users WHERE id=$1",
+    values: [req.session.userId],
   });
+
+  res.json(result.rows[0]);
 };

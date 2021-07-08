@@ -133,7 +133,7 @@ exports.me = async function (req, res) {
   }
 
   const result = await db.query({
-    text: "SELECT id, email FROM users WHERE id=$1",
+    text: "SELECT * FROM users WHERE id=$1",
     values: [req.session.userId],
   });
 
@@ -161,7 +161,7 @@ exports.voter = async function (req, res) {
 exports.hasvoted = async function (req, res) {
   const result = await db.query({
     text: "SELECT hasvoted FROM users WHERE id=$1",
-    values: [req.query.id],
+    values: [req.session.userId],
   });
 
   res.json(result.rows[0]);

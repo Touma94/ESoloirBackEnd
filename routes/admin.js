@@ -37,7 +37,7 @@ exports.setValidity = async function (req, res) {
       to: email,
       subject: "Compte e-soloir validé",
       text: "yes",
-      html: '<div><img src="cid:logo" width="100" height="89" style="margin: 10px 0"><p>Bonjour Monsieur/madame,</p><p> Votre compte d’électeur sur la plateforme e-soloir a été validé. Vous avez maintenant accès à votre espace de vote en vous connectant sur ce lien ci-dessous :</p><a href="https://e-soloir.com/login">https://e-soloir.com/login</a></div>',
+      html: '<div><img src="cid:logo" width="100" height="89" style="margin: 10px 0"><p>Bonjour Monsieur/madame,</p><p> Votre compte d’électeur sur la plateforme e-soloir a été validé. Vous avez maintenant accès à votre espace de vote en vous connectant sur ce lien ci-dessous :</p><a href="http://localhost:5000/register">http://localhost:5000/login</a></div>',
       attachments: [
         {
           filename: "logo_officiel.png",
@@ -85,7 +85,7 @@ exports.setValidity = async function (req, res) {
       to: email,
       subject: "Compte e-soloir invalide",
       text: "yes",
-      html: '<div><img src="cid:logo" width="100" height="89" style="margin: 10px 0"><p>Bonjour Monsieur/madame,</p><p> Votre compte d’électeur sur la plateforme e-soloir n\'a pas été validé. Veuillez vérifier vos pièces d\'identités</p><a href="https://e-soloir.com/register">https://e-soloir.com/register</a></div>',
+      html: '<div><img src="cid:logo" width="100" height="89" style="margin: 10px 0"><p>Bonjour Monsieur/madame,</p><p> Votre compte d’électeur sur la plateforme e-soloir n\'a pas été validé. Veuillez vérifier vos pièces d\'identités</p><a href="http://localhost:5000/register">http://localhost:5000/register</a></div>',
       attachments: [
         {
           filename: "logo_officiel.png",
